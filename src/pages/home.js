@@ -1,44 +1,31 @@
 import React, { Component } from 'react';
-// import './App.css';
-import Form from 'react-bootstrap/Form';
-import Image from 'react-bootstrap/Image';
-import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Button from 'react-bootstrap/Button';
+import '../App.css';
 import 'bootstrap/dist/css/bootstrap.css';
-// import background from "./img/Skin-Cancer-in-the-Sand.jpg";
+import Card from 'react-bootstrap/Card';
 
 class Home extends Component {
-
   constructor(props) {
     super(props);
+    this.selectFile = this.selectFile.bind(this);
+    this.predict = this.predict.bind(this);
 
     this.state = {
+      currentFile: undefined,
+      previewImage: undefined,
+      result: "",
       isLoading: false,
-      hasImage: false,
-      imageUrl: '',
-      fileUrl: '',
-      file:null,
-      result: ""
     };
   }
 
-  handleChange = (event) => {
-    const value = event.target.value;
-    const name = event.target.name;
-    console.log(value+" AND "+name);
-    var hasImage = this.state.hasImage;
-    hasImage = value != '';
+  selectFile(event) {
     this.setState({
-      hasImage,
-      fileUrl: URL.createObjectURL(event.target.files[0]),
-      file:event.target.files[0],
+      currentFile: event.target.files[0],
+      previewImage: URL.createObjectURL(event.target.files[0]),
     });
   }
 
-  handlePredictClick = (event) => {
-    const file = this.state.file;
+  predict() {
+    const file = this.state.currentFile;
 
     const data = new FormData();
     data.append('file', file);
@@ -59,75 +46,55 @@ class Home extends Component {
       });
   }
 
-  handleCancelClick = (event) => {
-    this.setState({ result: "", hasImage: false, formData:{city_img:''}});
-  }
-
   render() {
-    const hasImage = this.state.hasImage;
-    const isLoading = this.state.isLoading;
-    const imageUrl = this.state.imageUrl;
-    const result = this.state.result;
-    const fileUrl = this.state.fileUrl;
+    const {
+      currentFile,
+      previewImage,
+      result,
+    } = this.state;
 
     return (
-      <Container>
-        <div>
-          <h1 className="title">Skin Cancer Detection</h1>
+      
+      <div className="container">
+        <div class="card bg-light">
+          <div class="card-body text-center">
+            <h4>Skin Cancer Detection</h4>
+            <div className="content">
+              <div>
+                <div className="row">
+                  <div className="col-8">
+                    <label className="btn btn-default p-0">
+                      <input type="file" accept="image/*" onChange={this.selectFile} />
+                    </label>
+                  </div>
+
+                  <div className="col-4">
+                    <button
+                      className="btn btn-success btn-sm"
+                      disabled={!currentFile}
+                      onClick={this.predict}
+                    >
+                      Predict
+                    </button>
+                  </div>
+                </div>
+
+                {previewImage && (
+                <div>
+                  <img className="preview" src={previewImage} alt="" />
+                </div>
+                )}
+
+                {result && (
+                <div className="alert alert-secondary mt-3" role="alert">
+                  {result}
+                </div> 
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-        {/* <div style={{ backgroundImage: `url(${background})` }}>
-          Hello World
-        </div> */}
-        <div className="content">
-          <Form>
-            {/* <Form.Row> */}
-              <Form.Group as={Col}>
-                <Form.Label>Upload Image</Form.Label>
-                <Form.Control
-                  type="file" 
-                //   placeholder="Text Field 1" 
-                  name="image"
-                  value={imageUrl}
-                  onChange={this.handleChange} />
-              </Form.Group>
-            {/* </Form.Row> */}
-            <Row>
-                { hasImage ?
-                <Col>
-                    <Image height={300} width={300} src={fileUrl} roundedCircle />
-                </Col> : null }
-            </Row>
-            
-            <Row>
-              <Col>
-                <Button
-                  block
-                  variant="success"
-                  disabled={isLoading}
-                  onClick={!isLoading ? this.handlePredictClick : null}>
-                  { isLoading ? 'Making prediction' : 'Predict' }
-                </Button>
-              </Col>
-              <Col>
-                <Button
-                  block
-                  variant="danger"
-                  disabled={isLoading}
-                  onClick={this.handleCancelClick}>
-                  Reset prediction
-                </Button>
-              </Col>
-            </Row>
-          </Form>
-          {result === "" ? null :
-            (<Row>
-              <Col className="result-container">
-                <h5 id="result">{result}</h5>
-              </Col>
-            </Row>)
-          }
-        </div>
-      </Container>
+      </div>
     );
   }
 }
