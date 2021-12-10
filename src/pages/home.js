@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import ApexChart from 'apexcharts';
+import ReactApexChart from 'react-apexcharts';
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import Card from 'react-bootstrap/Card';
@@ -14,6 +17,25 @@ class Home extends Component {
       previewImage: undefined,
       result: "",
       isLoading: false,
+      series: undefined,
+      options: {
+        chart: {
+          width: 380,
+          type: 'pie',
+        },
+        labels: [],
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+      },
     };
   }
 
@@ -31,6 +53,7 @@ class Home extends Component {
     data.append('file', file);
 
     this.setState({ isLoading: true });
+    
     fetch('http://127.0.0.1:5000/prediction/', 
       {
         method: 'POST',
@@ -39,8 +62,12 @@ class Home extends Component {
       .then(response => response.json())
       .then(response => {
         console.log(response)
+        var options = {...this.state.options}
+        options.labels = [response.result[0].class, response.result[1].class]
         this.setState({
-          result: response.result,
+          result: response.result[2].predicted_label,
+          series: [response.result[0].score, response.result[1].score],
+          options,
           isLoading: false
         });
       });
@@ -51,6 +78,7 @@ class Home extends Component {
       currentFile,
       previewImage,
       result,
+      series,
     } = this.state;
 
     return (
@@ -81,7 +109,7 @@ class Home extends Component {
 
                 {previewImage && (
                 <div>
-                  <img className="preview" src={previewImage} alt="" />
+                  <img className="preview" src={previewImage} alt="" width="100" height="100"/>
                 </div>
                 )}
 
@@ -92,11 +120,17 @@ class Home extends Component {
                 )}
               </div>
             </div>
+            {series && (
+              <div id="chart">
+                <ReactApexChart options={this.state.options} series={this.state.series} type="pie" width={380}/>
+              </div>
+            )}
           </div>
         </div>
       </div>
     );
   }
 }
-
+// const domContainer = document.querySelector('#chart');
+// ReactDOM.render(React.createElement(ApexChart), domContainer);
 export default Home;
