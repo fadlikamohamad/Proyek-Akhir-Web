@@ -12,8 +12,8 @@ class Home extends Component {
     this.selectFile = this.selectFile.bind(this);
     this.predict = this.predict.bind(this);
 
-    this.state = {
-      currentFile: undefined,
+    this.initialState = {
+      currentFile: null,
       previewImage: undefined,
       result: "",
       isLoading: false,
@@ -37,6 +37,7 @@ class Home extends Component {
         }]
       },
     };
+    this.state = this.initialState;
   }
 
   selectFile(event) {
@@ -73,6 +74,12 @@ class Home extends Component {
       });
   }
 
+  onResetClick(e) {
+    e.preventDefault();
+    this.setState(this.initialState);
+    document.getElementById("input").value = null;
+  }
+
   render() {
     const {
       currentFile,
@@ -92,17 +99,25 @@ class Home extends Component {
                 <div className="row">
                   <div className="col-8">
                     <label className="btn btn-default p-0">
-                      <input type="file" accept="image/*" onChange={this.selectFile} />
+                      <input id="input" type="file" accept="image/*" onChange={this.selectFile} />
                     </label>
                   </div>
 
                   <div className="col-4">
                     <button
                       className="btn btn-success btn-sm"
+                      style={{marginRight: 5 + 'px'}}
                       disabled={!currentFile}
                       onClick={this.predict}
                     >
                       Predict
+                    </button>
+                    <button 
+                      className="btn btn-danger btn-sm"
+                      disabled={!currentFile} 
+                      onClick={this.onResetClick.bind(this)}
+                    >
+                      Reset
                     </button>
                   </div>
                 </div>
