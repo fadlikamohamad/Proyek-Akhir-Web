@@ -5,6 +5,7 @@ import ReactApexChart from 'react-apexcharts';
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import Card from 'react-bootstrap/Card';
+import {ThreeDots} from 'react-loader-spinner';
 
 class Home extends Component {
   constructor(props) {
@@ -14,6 +15,8 @@ class Home extends Component {
 
     this.initialState = {
       currentFile: null,
+      fileName: "",
+      tempCurrentFile: null,
       previewImage: undefined,
       result: "",
       isLoading: false,
@@ -41,10 +44,18 @@ class Home extends Component {
   }
 
   selectFile(event) {
-    this.setState({
-      currentFile: event.target.files[0],
-      previewImage: URL.createObjectURL(event.target.files[0]),
-    });
+    if (event.target.files.length > 0) {  
+      this.setState({
+        currentFile: event.target.files[0],
+        fileName: event.target.files[0].name,
+        previewImage: URL.createObjectURL(event.target.files[0]),
+        tempCurrentFile: event.target.files[0],
+      });
+    } else {
+      this.setState({
+        currentFile: this.state.tempCurrentFile,
+      });
+    }
   }
 
   predict() {
@@ -55,7 +66,7 @@ class Home extends Component {
 
     this.setState({ isLoading: true });
     
-    fetch('http://127.0.0.1:5000/prediction/', 
+    fetch('http://192.168.88.142:5000/prediction/', 
       {
         method: 'POST',
         body: data
@@ -86,6 +97,7 @@ class Home extends Component {
       previewImage,
       result,
       series,
+      isLoading
     } = this.state;
 
     return (
@@ -99,7 +111,7 @@ class Home extends Component {
                 <div className="row">
                   <div className="col-8">
                     <label className="btn btn-default p-0">
-                      <input id="input" type="file" accept="image/*" onChange={this.selectFile} />
+                      <input id="input" type="file" title=" " accept="image/*" onChange={this.selectFile}/>
                     </label>
                   </div>
 
@@ -121,23 +133,23 @@ class Home extends Component {
                     </button>
                   </div>
                 </div>
-
                 {previewImage && (
-                <div>
-                  <img className="preview" src={previewImage} alt="" width="100" height="100"/>
-                </div>
+                  <div>
+                    <img className="preview" src={previewImage} alt="" width="100" height="100"/>
+                    <p>{this.state.fileName}</p>
+                  </div>
                 )}
-
+                {isLoading ? <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}><ThreeDots/></div> : null}
                 {result && (
-                <div className="alert alert-secondary mt-3" role="alert">
-                  {result}
-                </div> 
+                  <div className="alert alert-secondary mt-3" role="alert">
+                    {result}
+                  </div> 
                 )}
               </div>
             </div>
             {series && (
               <div id="chart">
-                <ReactApexChart options={this.state.options} series={this.state.series} type="pie" width={380}/>
+                <ReactApexChart options={this.state.options} series={this.state.series} type="pie" width={350}/>
               </div>
             )}
           </div>
