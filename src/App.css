@@ -50,3 +50,8 @@
 .preview {
   max-width: 200px;
 }
+
+#input {
+  /* opacity: 0; */
+  color: rgba(0, 0, 0, 0);
+}
