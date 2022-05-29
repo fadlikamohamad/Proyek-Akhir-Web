@@ -66,7 +66,7 @@ class Home extends Component {
 
     this.setState({ isLoading: true });
     
-    fetch('http://192.168.88.142:5000/prediction/', 
+    fetch('http://192.168.56.142:5000/prediction/', 
       {
         method: 'POST',
         body: data
@@ -80,6 +80,13 @@ class Home extends Component {
           result: response.result[2].predicted_label,
           series: [response.result[0].score, response.result[1].score],
           options,
+          isLoading: false
+        });
+      })
+      .catch(err => {
+        console.log(err)
+        this.setState({
+          result: "Ada masalah dengan sambungan ke server. Silahkan coba beberapa saat lagi.",
           isLoading: false
         });
       });
