@@ -86,7 +86,7 @@ class Home extends Component {
       .catch(err => {
         console.log(err)
         this.setState({
-          result: "Ada masalah dengan sambungan ke server. Silahkan coba beberapa saat lagi.",
+          result: "Server sedang bermasalah. Silahkan coba beberapa saat lagi.",
           isLoading: false
         });
       });
