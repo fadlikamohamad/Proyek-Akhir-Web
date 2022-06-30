@@ -23,15 +23,15 @@ class Home extends Component {
       series: undefined,
       options: {
         chart: {
-          width: 380,
+          width: 350,
           type: 'pie',
         },
         labels: [],
         responsive: [{
-          breakpoint: 480,
+          breakpoint: 100,
           options: {
             chart: {
-              width: 200
+              width: 350
             },
             legend: {
               position: 'bottom'
@@ -66,7 +66,7 @@ class Home extends Component {
 
     this.setState({ isLoading: true });
     
-    fetch('http://192.168.56.142:5000/prediction/', 
+    fetch('https://pa-service-production.herokuapp.com/prediction/', 
       {
         method: 'POST',
         body: data
@@ -148,14 +148,14 @@ class Home extends Component {
                 )}
                 {isLoading ? <div style={{display:'flex', justifyContent:'center', alignItems:'center'}}><ThreeDots/></div> : null}
                 {result && (
-                  <div className="alert alert-secondary mt-3" role="alert">
+		  <p><b>
                     {result}
-                  </div> 
+                  </b></p>
                 )}
               </div>
             </div>
             {series && (
-              <div id="chart">
+              <div id="chart" style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
                 <ReactApexChart options={this.state.options} series={this.state.series} type="pie" width={350}/>
               </div>
             )}
