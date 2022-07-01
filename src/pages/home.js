@@ -66,7 +66,7 @@ class Home extends Component {
 
     this.setState({ isLoading: true });
     
-    fetch('https://pa-service-production.herokuapp.com/prediction/', 
+    fetch('http://192.168.60.142:5000/prediction/', 
       {
         method: 'POST',
         body: data
